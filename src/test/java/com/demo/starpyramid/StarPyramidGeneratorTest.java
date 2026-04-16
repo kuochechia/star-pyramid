@@ -62,4 +62,44 @@ class StarPyramidGeneratorTest {
                 .isInstanceOf(InvalidHeightException.class)
                 .hasMessageContaining("positive integer");
     }
+
+    @Test
+    void inverted_height1_producesSingleStar() {
+        assertThat(generator.generateInverted(1)).containsExactly("*");
+    }
+
+    @Test
+    void inverted_height2_producesTwoLines() {
+        assertThat(generator.generateInverted(2)).containsExactly("***", " *");
+    }
+
+    @Test
+    void inverted_height3_producesThreeLines() {
+        assertThat(generator.generateInverted(3)).containsExactly("*****", " ***", "  *");
+    }
+
+    @Test
+    void inverted_height5_producesFiveLines() {
+        assertThat(generator.generateInverted(5)).containsExactly(
+                "*********",
+                " *******",
+                "  *****",
+                "   ***",
+                "    *"
+        );
+    }
+
+    @Test
+    void inverted_height0_throwsInvalidHeightException() {
+        assertThatThrownBy(() -> generator.generateInverted(0))
+                .isInstanceOf(InvalidHeightException.class)
+                .hasMessageContaining("positive integer");
+    }
+
+    @Test
+    void inverted_negativeHeight_throwsInvalidHeightException() {
+        assertThatThrownBy(() -> generator.generateInverted(-1))
+                .isInstanceOf(InvalidHeightException.class)
+                .hasMessageContaining("positive integer");
+    }
 }
