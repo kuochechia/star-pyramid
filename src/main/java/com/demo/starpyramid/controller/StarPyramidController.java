@@ -2,6 +2,7 @@ package com.demo.starpyramid.controller;
 
 import com.demo.common.ApiResponse;
 import com.demo.starpyramid.dto.InvertedStarPyramidResponse;
+import com.demo.starpyramid.dto.StarHourglassResponse;
 import com.demo.starpyramid.dto.StarPyramidResponse;
 import com.demo.starpyramid.service.StarPyramidService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,17 @@ public class StarPyramidController {
             return ResponseEntity.ok(ApiResponse.ok(response));
         } catch (Exception ex) {
             log.error("Failed to generate inverted star pyramid for height={}", height, ex);
+            throw ex;
+        }
+    }
+
+    @GetMapping("/hourglass/{height}")
+    public ResponseEntity<ApiResponse<StarHourglassResponse>> generateHourglass(@PathVariable int height) {
+        try {
+            StarHourglassResponse response = starPyramidService.generateHourglass(height);
+            return ResponseEntity.ok(ApiResponse.ok(response));
+        } catch (Exception ex) {
+            log.error("Failed to generate star hourglass for height={}", height, ex);
             throw ex;
         }
     }

@@ -1,6 +1,7 @@
 package com.demo.starpyramid.service;
 
 import com.demo.starpyramid.dto.InvertedStarPyramidResponse;
+import com.demo.starpyramid.dto.StarHourglassResponse;
 import com.demo.starpyramid.dto.StarPyramidResponse;
 import com.demo.starpyramid.generator.StarPyramidGenerator;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class StarPyramidServiceImpl implements StarPyramidService {
     @Override
     public InvertedStarPyramidResponse generateInverted(int height) {
         return new InvertedStarPyramidResponse(generator.generateInverted(height));
+    }
+
+    @Override
+    public StarHourglassResponse generateHourglass(int height) {
+        return new StarHourglassResponse(generator.generateHourglass(height));
     }
 }
