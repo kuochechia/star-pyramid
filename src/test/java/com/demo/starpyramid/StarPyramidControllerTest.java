@@ -2,6 +2,7 @@ package com.demo.starpyramid;
 
 import com.demo.common.GlobalExceptionHandler;
 import com.demo.starpyramid.controller.StarPyramidController;
+import com.demo.starpyramid.dto.InvertedStarPyramidResponse;
 import com.demo.starpyramid.dto.StarPyramidResponse;
 import com.demo.starpyramid.exception.InvalidHeightException;
 import com.demo.starpyramid.service.StarPyramidService;
@@ -74,6 +75,30 @@ class StarPyramidControllerTest {
     @Test
     void nonNumericHeight_returns400() throws Exception {
         mockMvc.perform(get("/api/star-pyramid/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void inverted_validHeight_returns200WithInvertedLines() throws Exception {
+        when(starPyramidService.generateInverted(3))
+                .thenReturn(new InvertedStarPyramidResponse(List.of("*****", " ***", "  *")));
+
+        mockMvc.perform(get("/api/star-pyramid/inverted/3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.lines.length()").value(3))
+                .andExpect(jsonPath("$.data.lines[0]").value("*****"))
+                .andExpect(jsonPath("$.data.lines[2]").value("  *"));
+    }
+
+    @Test
+    void inverted_invalidHeight_returns400() throws Exception {
+        when(starPyramidService.generateInverted(0))
+                .thenThrow(new InvalidHeightException(0));
+
+        mockMvc.perform(get("/api/star-pyramid/inverted/0"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").exists());
