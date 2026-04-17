@@ -3,6 +3,7 @@ package com.demo.starpyramid;
 import com.demo.common.GlobalExceptionHandler;
 import com.demo.starpyramid.controller.StarPyramidController;
 import com.demo.starpyramid.dto.InvertedStarPyramidResponse;
+import com.demo.starpyramid.dto.StarHourglassResponse;
 import com.demo.starpyramid.dto.StarPyramidResponse;
 import com.demo.starpyramid.exception.InvalidHeightException;
 import com.demo.starpyramid.service.StarPyramidService;
@@ -99,6 +100,49 @@ class StarPyramidControllerTest {
                 .thenThrow(new InvalidHeightException(0));
 
         mockMvc.perform(get("/api/star-pyramid/inverted/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void hourglass_validHeight_returns200WithLines() throws Exception {
+        when(starPyramidService.generateHourglass(2))
+                .thenReturn(new StarHourglassResponse(List.of("***", " *", "***")));
+
+        mockMvc.perform(get("/api/star-pyramid/hourglass/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.lines.length()").value(3))
+                .andExpect(jsonPath("$.data.lines[0]").value("***"))
+                .andExpect(jsonPath("$.data.lines[1]").value(" *"))
+                .andExpect(jsonPath("$.data.lines[2]").value("***"));
+    }
+
+    @Test
+    void hourglass_invalidHeight_returns400() throws Exception {
+        when(starPyramidService.generateHourglass(0))
+                .thenThrow(new InvalidHeightException(0));
+
+        mockMvc.perform(get("/api/star-pyramid/hourglass/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void hourglass_negativeHeight_returns400() throws Exception {
+        when(starPyramidService.generateHourglass(-1))
+                .thenThrow(new InvalidHeightException(-1));
+
+        mockMvc.perform(get("/api/star-pyramid/hourglass/-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void hourglass_nonNumericHeight_returns400() throws Exception {
+        mockMvc.perform(get("/api/star-pyramid/hourglass/abc"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").exists());

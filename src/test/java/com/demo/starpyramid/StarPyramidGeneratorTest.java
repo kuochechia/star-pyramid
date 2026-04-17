@@ -102,4 +102,39 @@ class StarPyramidGeneratorTest {
                 .isInstanceOf(InvalidHeightException.class)
                 .hasMessageContaining("positive integer");
     }
+
+    @Test
+    void hourglass_height1_producesSingleStar() {
+        assertThat(generator.generateHourglass(1)).containsExactly("*");
+    }
+
+    @Test
+    void hourglass_height2_producesThreeLines() {
+        assertThat(generator.generateHourglass(2)).containsExactly("***", " *", "***");
+    }
+
+    @Test
+    void hourglass_height3_producesFiveLines() {
+        assertThat(generator.generateHourglass(3)).containsExactly(
+                "*****",
+                " ***",
+                "  *",
+                " ***",
+                "*****"
+        );
+    }
+
+    @Test
+    void hourglass_height0_throwsInvalidHeightException() {
+        assertThatThrownBy(() -> generator.generateHourglass(0))
+                .isInstanceOf(InvalidHeightException.class)
+                .hasMessageContaining("positive integer");
+    }
+
+    @Test
+    void hourglass_negativeHeight_throwsInvalidHeightException() {
+        assertThatThrownBy(() -> generator.generateHourglass(-2))
+                .isInstanceOf(InvalidHeightException.class)
+                .hasMessageContaining("positive integer");
+    }
 }
