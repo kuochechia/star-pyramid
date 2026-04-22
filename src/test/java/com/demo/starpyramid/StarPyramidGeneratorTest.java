@@ -109,13 +109,28 @@ class StarPyramidGeneratorTest {
     }
 
     @Test
-    void hourglass_height2_producesThreeLines() {
-        assertThat(generator.generateHourglass(2)).containsExactly("***", " *", "***");
+    void hourglass_height2_producesTwoLines() {
+        assertThat(generator.generateHourglass(2)).containsExactly("***", " *");
     }
 
     @Test
-    void hourglass_height3_producesFiveLines() {
-        assertThat(generator.generateHourglass(3)).containsExactly(
+    void hourglass_height3_producesThreeLines() {
+        assertThat(generator.generateHourglass(3)).containsExactly("***", " *", "***");
+    }
+
+    @Test
+    void hourglass_height4_producesFourTruncatedLines() {
+        assertThat(generator.generateHourglass(4)).containsExactly(
+                "*****",
+                " ***",
+                "  *",
+                " ***"
+        );
+    }
+
+    @Test
+    void hourglass_height5_producesFiveLines() {
+        assertThat(generator.generateHourglass(5)).containsExactly(
                 "*****",
                 " ***",
                 "  *",

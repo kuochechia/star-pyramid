@@ -32,14 +32,17 @@ public class StarPyramidGenerator {
     }
 
     /**
-     * 產生置中星星沙漏：上半為倒立金字塔、下半為正立金字塔，最窄行不重複。
+     * 產生置中星星沙漏：參數為<strong>輸出總行數</strong> {@code n}（非單臂高度）。
+     * 先以臂高 {@code h = n/2 + 1} 組出對稱完整沙漏，再取前 {@code n} 行。
      */
     public List<String> generateHourglass(int height) {
         if (height <= 0) {
             throw new InvalidHeightException(height);
         }
-        List<String> inverted = generateInverted(height);
-        List<String> upright = generate(height);
-        return Stream.concat(inverted.stream(), upright.subList(1, height).stream()).toList();
+        int h = height / 2 + 1;
+        List<String> inverted = generateInverted(h);
+        List<String> upright = generate(h);
+        List<String> full = Stream.concat(inverted.stream(), upright.subList(1, h).stream()).toList();
+        return List.copyOf(full.subList(0, height));
     }
 }

@@ -108,15 +108,14 @@ class StarPyramidControllerTest {
     @Test
     void hourglass_validHeight_returns200WithLines() throws Exception {
         when(starPyramidService.generateHourglass(2))
-                .thenReturn(new StarHourglassResponse(List.of("***", " *", "***")));
+                .thenReturn(new StarHourglassResponse(List.of("***", " *")));
 
         mockMvc.perform(get("/api/star-pyramid/hourglass/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.lines.length()").value(3))
+                .andExpect(jsonPath("$.data.lines.length()").value(2))
                 .andExpect(jsonPath("$.data.lines[0]").value("***"))
-                .andExpect(jsonPath("$.data.lines[1]").value(" *"))
-                .andExpect(jsonPath("$.data.lines[2]").value("***"));
+                .andExpect(jsonPath("$.data.lines[1]").value(" *"));
     }
 
     @Test
