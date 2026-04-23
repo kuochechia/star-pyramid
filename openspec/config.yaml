@@ -1,20 +1,34 @@
+# OpenSpec 項目全局配置
+
+# 1. 聲明 Schema 模式 (預設為 spec-driven)
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# 2. 項目上下文 (Project Context)
+# 這部分內容會自動注入給 AI，讓它在生成 RESTful API 或設計文檔時更了解環境
+context: |
+  Tech Stack: Java 21, Spring Boot 3, Maven
+  Architecture: Specification-Driven Design (SDD)
+  API Conventions: 
+    - RESTful API with JSON responses
+    - Use MapStruct for DTO mapping
+    - Use Lombok to reduce boilerplate
+  Database: PostgreSQL
+  Testing: JUnit 5, Mockito
+  Documentation: Documentation as Code (Markdown)
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# 3. 針對不同文檔類型的自定義規則 (Rules)
+# 當 Agent 生成特定檔案時，會強制執行的指令
+rules:
+  proposal:
+    - "必須包含 Rollback Plan（回滾計畫）"
+    - "明確識別受影響的系統模組"
+  specs:
+    - "API 規格必須包含 Request/Response 範例"
+    - "使用 Given/When/Then 格式描述測試場景"
+    - "所有 API 必須定義 200 (Success) 與 400/500 (Error) 狀態碼"
+  design:
+    - "需包含 Mermaid 序列圖說明數據流"
+    - "明確定義資料庫 Schema 的異動"
+  tasks:
+    - "將任務拆解為小於 1 小時的可執行單元"
+    - "首個任務必須是環境檢查或測試案例撰寫"

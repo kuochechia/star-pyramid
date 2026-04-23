@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: Demo Star Pyramid API
+  description: |
+    Spring Boot 示範專案之 REST API。所有端點回應皆包在 `ApiResponse` 中；
+    成功時 `success` 為 true、`data` 為對應 DTO；失敗時 `success` 為 false、`data` 為 null。
+  version: 0.0.1-SNAPSHOT
+
+servers:
+  - url: http://localhost:8080
+    description: 本機預設（未設定 `server.port` 時為 8080）
+
+tags:
+  - name: star-pyramid
+    description: 置中星星圖形產生
+
+paths:
+  /api/star-pyramid/{height}:
+    get:
+      tags:
+        - star-pyramid
+      operationId: generateStarPyramid
+      summary: 產生置中星星金字塔
+      description: |
+        依高度 `height` 產生置中對齊的星星金字塔，每一行為字串（含前導空白與 `*`）。
+        `height` 必須為正整數，否則回傳 400。
+      parameters:
+        - name: height
+          in: path
+          required: true
+          description: 金字塔高度（行數），須 ≥ 1
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseStarPyramidResponse"
+              example:
+                success: true
+                message: Success
+                data:
+                  lines:
+                    - "    *"
+                    - "   ***"
+                    - "  *****"
+                    - " *******"
+                    - "*********"
+        "400":
+          description: |
+            請求參數無效。例如：`height` ≤ 0，或路徑變數無法解析為整數（型別不符）。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              examples:
+                invalidHeight:
+                  summary: 高度非正整數
+                  value:
+                    success: false
+                    message: "Invalid height: 0. Height must be a positive integer."
+                    data: null
+                typeMismatch:
+                  summary: 路徑參數型別錯誤
+                  value:
+                    success: false
+                    message: "Invalid value for parameter 'height': must be a positive integer."
+                    data: null
+        "500":
+          description: 未預期的伺服器錯誤
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+              example:
+                success: false
+                message: Internal server error
+                data: null
+
+  /api/star-pyramid/inverted/{height}:
+    get:
+      tags:
+        - star-pyramid
+      operationId: generateInvertedStarPyramid
+      summary: 產生倒立置中星星金字塔
+      description: |
+        第 1 行最寬，第 `height` 行最窄。`height` 必須為正整數。
+      parameters:
+        - name: height
+          in: path
+          required: true
+          description: 倒立金字塔高度（行數），須 ≥ 1
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseInvertedStarPyramidResponse"
+        "400":
+          description: 參數無效（同「置中星星金字塔」）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "500":
+          description: 未預期的伺服器錯誤
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
+  /api/star-pyramid/hourglass/{height}:
+    get:
+      tags:
+        - star-pyramid
+      operationId: generateStarHourglass
+      summary: 產生置中星星沙漏
+      description: |
+        路徑參數為**輸出總行數**（非單一臂高）。實作上先以臂高 `h = height/2 + 1` 組出對稱沙漏，再取前 `height` 行。
+        `height` 必須為正整數。
+      parameters:
+        - name: height
+          in: path
+          required: true
+          description: 沙漏圖形輸出總行數，須 ≥ 1
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseStarHourglassResponse"
+        "400":
+          description: 參數無效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+        "500":
+          description: 未預期的伺服器錯誤
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseError"
+
+components:
+  schemas:
+    StarPyramidResponse:
+      type: object
+      required:
+        - lines
+      properties:
+        lines:
+          type: array
+          description: 由上到下的每一行圖樣（含空白與星號）
+          items:
+            type: string
+
+    InvertedStarPyramidResponse:
+      type: object
+      required:
+        - lines
+      properties:
+        lines:
+          type: array
+          items:
+            type: string
+
+    StarHourglassResponse:
+      type: object
+      required:
+        - lines
+      properties:
+        lines:
+          type: array
+          items:
+            type: string
+
+    ApiResponseStarPyramidResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+        message:
+          type: string
+          description: 說明訊息；成功時通常為 "Success"
+        data:
+          $ref: "#/components/schemas/StarPyramidResponse"
+
+    ApiResponseInvertedStarPyramidResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/InvertedStarPyramidResponse"
+
+    ApiResponseStarHourglassResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/StarHourglassResponse"
+
+    ApiResponseError:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: 錯誤說明（例如驗證失敗或內部錯誤訊息）
+        data:
+          nullable: true
+          description: 錯誤時為 null；對應 Java `ApiResponse` 第三個欄位
